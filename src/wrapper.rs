@@ -1,11 +1,12 @@
+#![allow(dead_code)]
+
 use std::fmt::Display;
 use std::fs;
 use colored::Colorize;
 
 fn check_result<Res: Display + PartialEq>(title: &'static str, expected: Option<Res>, res: Res) {
     println!("{} Result: {}", title, res);
-    if expected.is_some() {
-        let test = expected.unwrap();
+    if let Some(test) = expected {
         if test == res {
             println!("{}", "\tPASS".green());
             println!();
@@ -26,40 +27,48 @@ fn check_result<Res: Display + PartialEq>(title: &'static str, expected: Option<
 /// * `prob` - The problem function.
 ///
 /// # Generic Types
-/// * `Res` - The result from this problem, something to display.
+/// * `Result` - The result from this problem, something to display.
 /// * `Input` - The type of input the problem function is expecting.
-/// * `Prep` - The transformation from input line to the input the problem is expecting.
+/// * `LineProcessor` - The transformation from input line to the input the problem is expecting.
 /// * `Problem` - The problem function.
 ///
-pub fn run_day<Res, Input, Prep, Problem>(title: &'static str, name: &'static str, prep: Prep, prob: Problem, expected: Option<Res>)
-    where Res: Display + PartialEq,
-          Prep: Fn(&str) -> Input,
-          Problem: Fn(&[Input]) -> Res {
+pub fn run_day_preprocess_lines<Result, Input, LineProcessor, Problem>(title: &'static str, name: &'static str, line_processor: LineProcessor, problem: Problem, expected: Option<Result>)
+    where Result: Display + PartialEq,
+          LineProcessor: Fn(&str) -> Input,
+          Problem: Fn(&[Input]) -> Result {
 
-    let raw_contents = fs::read_to_string(name).expect(&*format!("Failed to read {}", name));
-    let contents = raw_contents.lines().collect::<Vec<&str>>();
-    let transformed: Vec<Input> = contents.into_iter().map(prep).collect();
+    let input : Vec<Input> = fs::read_to_string(name)
+        .unwrap_or_else(|_| panic!("Failed to read {}", name))
+        .lines()
+        .map(line_processor).collect();
 
-    let res = prob(transformed.as_slice());
+    let res = problem(input.as_slice());
     check_result(title, expected, res);
 }
 
-pub fn run_day_no_prep<Res, Problem>(title: &'static str, name: &'static str, prob: Problem, expected: Option<Res>)
-    where Res: Display + PartialEq,
-          Problem: Fn(&[&str]) -> Res {
+pub fn run_day_preprocess_full_input<Result, Input, Preprocessor, Problem>(title: &'static str, name: &'static str, preprocessor: Preprocessor, problem: Problem, expected: Option<Result>)
+    where Result: Display + PartialEq,
+          Preprocessor: Fn(Vec<&str>) -> Input,
+          Problem: Fn(&Input) -> Result {
 
-    let raw_contents = fs::read_to_string(name).expect(&*format!("Failed to read {}", name));
-    let contents = raw_contents.lines().collect::<Vec<&str>>();
+    let input = preprocessor(
+        fs::read_to_string(name)
+            .unwrap_or_else(|_| panic!("Failed to read {}", name))
+            .lines()
+            .collect()
+    );
 
-    let res = prob(contents.as_slice());
+    let res = problem(&input);
     check_result(title, expected, res);
 }
 
-pub fn prep_opt_i32(line: &str) -> Option<i32> {
-    line.parse::<i32>().ok()
-}
+pub fn run_day_raw_lines<Result, Problem>(title: &'static str, name: &'static str, problem: Problem, expected: Option<Result>)
+    where Result: Display + PartialEq,
+          Problem: Fn(&[&str]) -> Result {
 
-/// Quick conversion function from str to i32
-pub fn prep_i32(line: &str) -> i32 {
-    line.parse::<i32>().expect(line)
+    let raw_contents = fs::read_to_string(name).unwrap_or_else(|_| panic!("Failed to read {}", name));
+    let contents : Vec<&str> = raw_contents.lines().collect();
+
+    let res = problem(contents.as_slice());
+    check_result(title, expected, res);
 }
