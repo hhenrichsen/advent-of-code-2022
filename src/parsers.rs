@@ -13,8 +13,11 @@ pub fn str_to_char_vec(line: &str) -> Vec<char> {
     line.chars().collect()
 }
 
-pub fn identity<R>(input: R) -> R {
-    input
+pub fn split_string_into_pair(line: &str) -> (&str, &str) {
+    let mut parts = line.split_whitespace().take(2);
+    let a = parts.next().unwrap();
+    let b = parts.next().unwrap();
+    (a, b)
 }
 
 pub fn comma_separated_str_to_vec<R>(line: &str, sub: fn(&str) -> R) -> Vec<R> {
