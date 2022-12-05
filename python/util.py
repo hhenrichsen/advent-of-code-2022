@@ -4,9 +4,9 @@ from typing import Iterable, List, TypeVar
 A = TypeVar("A")
 
 
-def read_stripped_lines(path: str) -> List[str]:
+def read_stripped_lines(path: str, chars: str) -> List[str]:
     with open(path) as f:
-        return list(map(lambda line: line.strip(), f.readlines()))
+        return list(map(lambda line: line.strip(chars), f.readlines()))
 
 
 def partition_list(list: Iterable[A], count: int) -> List[List[A]]:
