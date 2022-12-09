@@ -24,3 +24,13 @@ def intersect_strings(strings):
     for other in strings[1:]:
         init = init.intersection(list(other))
     return list(init)
+
+def ilp(a):
+    print(a)
+    return a
+
+def l(a):
+    return len(a)
+
+def windows(l, sz):
+    return [l[i-sz:i] for i in range(sz, len(l) + 1)]
