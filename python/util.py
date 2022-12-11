@@ -4,7 +4,7 @@ from typing import Iterable, List, TypeVar
 A = TypeVar("A")
 
 
-def read_stripped_lines(path: str, chars: str) -> List[str]:
+def read_stripped_lines(path: str, chars: str = '\n') -> List[str]:
     with open(path) as f:
         return list(map(lambda line: line.strip(chars), f.readlines()))
 
