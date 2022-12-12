@@ -1,10 +1,12 @@
-from typing import Iterable, List, TypeVar
+from inspect import signature
+from typing import Callable, Iterable, List, Tuple, TypeVar
 
 
 A = TypeVar("A")
+B = TypeVar("B")
 
 
-def read_stripped_lines(path: str, chars: str = '\n') -> List[str]:
+def read_stripped_lines(path: str, chars: str = "\n") -> List[str]:
     with open(path) as f:
         return list(map(lambda line: line.strip(chars), f.readlines()))
 
@@ -25,12 +27,7 @@ def intersect_strings(strings):
         init = init.intersection(list(other))
     return list(init)
 
-def ilp(a):
-    print(a)
-    return a
-
-def l(a):
-    return len(a)
 
 def windows(l, sz):
-    return [l[i-sz:i] for i in range(sz, len(l) + 1)]
+    return [l[i - sz : i] for i in range(sz, len(l) + 1)]
+
