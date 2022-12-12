@@ -2,7 +2,7 @@ def breadth_first_search(
     next,
     found,
     state_filter=lambda a: True,
-    serialize=lambda a: str(a),
+    serialize=lambda a: a,
     optimize_visited=True,
     optimize_queued=False,
     keep_history=False
