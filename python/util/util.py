@@ -1,5 +1,5 @@
-from inspect import signature
-from typing import Callable, Iterable, List, Tuple, TypeVar
+from typing import Iterable, List, TypeVar
+from numbers import Number
 
 
 A = TypeVar("A")
@@ -37,10 +37,11 @@ def sort_lambda(l, fn):
             self.v = v
             
         def __lt__(self, other):
-            return fn(self.v, other.v)
-        
-        def __repr__(self) -> str:
-            return self.v.__repr__()
+            res = fn(self.v, other.v)
+            if isinstance(res, bool):
+                return res 
+            elif isinstance(res, Number):
+                return res < 0
         
     c_list = list(map(__InternalSort, l))
     return list(map(lambda c: c.v, sorted(c_list)))
