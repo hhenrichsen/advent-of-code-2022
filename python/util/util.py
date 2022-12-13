@@ -31,3 +31,18 @@ def intersect_strings(strings):
 def windows(l, sz):
     return [l[i - sz : i] for i in range(sz, len(l) + 1)]
 
+def sort_lambda(l, fn):
+    class __InternalSort:
+        def __init__(self, v):
+            self.v = v
+            
+        def __lt__(self, other):
+            return fn(self.v, other.v)
+        
+        def __repr__(self) -> str:
+            return self.v.__repr__()
+        
+    c_list = list(map(__InternalSort, l))
+    return list(map(lambda c: c.v, sorted(c_list)))
+
+    
